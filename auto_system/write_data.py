@@ -4,7 +4,7 @@ def make_excel(announce_list, option):
     workbook = openpyxl.Workbook()
     worksheet = workbook.active
     worksheet.title = '공고목록'
-    worksheet.append(['업무', '공고번호-차수', '분류', '공고명', '공고기관', '수요기관', '계약방법', '입력일시(입찰마감일시)', '공동수급'])
+    worksheet.append(['업무', '분류', '공고명', '공고기관', '공동수급', '입찰개시', '입찰마감', '개찰(입찰)', '입찰참가자격등록', '공동수급협정서마감', '사업금액(추정가격 + 부가세)', '추정금액', '추정가격', '부가가치세', '배정예산', '참가가능지역'])
 
     for row in announce_list:
         worksheet.append(row)
