@@ -68,13 +68,20 @@ class MainSystemUi(object):
         self.work_private_label.setGeometry(QRect(515, 0, 30, 30))
         self.work_private_checkbox.setChecked(True)
 
-        #공고명
+        # 공고명
         self.announcement_name_label = QLabel(window)
         self.announcement_name_label.setText("공고명")
         self.announcement_name_label.setGeometry(QRect(10, 30, 40, 30))
 
         self.announcement_name_line = QLineEdit(window)
-        self.announcement_name_line.setGeometry(QRect(70, 30, 400, 30))
+        self.announcement_name_line.setGeometry(QRect(70, 30, 300, 30))
+
+        self.announcement_register_button = QPushButton(window)
+        self.announcement_register_button.setText("등록")
+        self.announcement_register_button.setGeometry(QRect(375, 30, 70, 30))
+
+        self.announcement_combo = QComboBox(window)
+        self.announcement_combo.setGeometry(QRect(450, 30, 100, 30))
         
         # 공고/개찰일
         self.deadline_label = QLabel(window)
@@ -106,7 +113,7 @@ class MainSystemUi(object):
         self.organization_label.setGeometry(QRect(10, 90, 40, 30))
 
         self.organization_line = QLineEdit(window)
-        self.organization_line.setGeometry(QRect(70, 90, 200, 30))
+        self.organization_line.setGeometry(QRect(70, 90, 300, 30))
 
         # 실행
         self.execute_button = QPushButton(window)

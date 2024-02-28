@@ -32,15 +32,21 @@ def webCrawling(work_list, announcement_name, deadline, organization):
     announcement_list = list()  # Excel에 작성할 데이터
     while(True):
         for row in range(1, 11):
-            data = ["", "", "" , "" , "" , "" , "" , "" , "" , "", "", "", "", "", "", ""]
+            data = ["", "", "" , "", "", "" , "" , "" , "" , "" , "", "", "", "", "", "", "", ""]
             try:
-                data[0] = driver.find_element(By.XPATH, f'//*[@id="resultForm"]/div[2]/table/tbody/tr[{row}]/td[1]/div').text
+                data[0] = driver.find_element(By.XPATH, f'//*[@id="resultForm"]/div[2]/table/tbody/tr[{row}]/td[1]/div').text   #업무
             except:
                 break
-            data[1] = driver.find_element(By.XPATH, f'//*[@id="resultForm"]/div[2]/table/tbody/tr[{row}]/td[3]/div').text
-            data[2] = driver.find_element(By.XPATH, f'//*[@id="resultForm"]/div[2]/table/tbody/tr[{row}]/td[4]/div').text
-            data[3] = driver.find_element(By.XPATH, f'//*[@id="resultForm"]/div[2]/table/tbody/tr[{row}]/td[5]/div').text
-            data[4] = driver.find_element(By.XPATH, f'//*[@id="resultForm"]/div[2]/table/tbody/tr[{row}]/td[9]/div').text
+            data[1] = driver.find_element(By.XPATH, f'//*[@id="resultForm"]/div[2]/table/tbody/tr[{row}]/td[3]/div').text   #분류
+            data[2] = driver.find_element(By.XPATH, f'//*[@id="resultForm"]/div[2]/table/tbody/tr[{row}]/td[4]/div').text   #공고명
+            data[3] = driver.find_element(By.XPATH, f'//*[@id="resultForm"]/div[2]/table/tbody/tr[{row}]/td[5]/div').text   #공고기관
+            data[4] = driver.find_element(By.XPATH, f'//*[@id="resultForm"]/div[2]/table/tbody/tr[{row}]/td[6]/div').text
+            # 공동수급
+            try:
+                data[5] = driver.find_element(By.XPATH, f'//*[@id="resultForm"]/div[2]/table/tbody/tr[{row}]/td[9]/div/button').get_attribute('title') 
+            except:
+                data[5] = driver.find_element(By.XPATH, f'//*[@id="resultForm"]/div[2]/table/tbody/tr[{row}]/td[9]/div').text
+            data[17] = driver.find_element(By.XPATH, f'//*[@id="resultForm"]/div[2]/table/tbody/tr[{row}]/td[4]/div/a').get_attribute('href')   #URL
             # 공고명 접속
             driver.find_element(By.XPATH, f'//*[@id="resultForm"]/div[2]/table/tbody/tr[{row}]/td[4]/div/a').click()
             sections = driver.find_elements(By.CLASS_NAME, "section")
@@ -54,19 +60,19 @@ def webCrawling(work_list, announcement_name, deadline, organization):
                         try:
                             if section_text[index] == "입찰개시일시" or section_text[index] == "입찰서접수 개시일시":
                                 if p.match(section_text[index+1]):
-                                    data[5] = section_text[index+1]
+                                    data[6] = section_text[index+1]
                             elif section_text[index] == "입찰마감일시" or section_text[index] == "입찰서접수 마감일시":
                                 if p.match(section_text[index+1]):
-                                    data[6] = section_text[index+1]
+                                    data[7] = section_text[index+1]
                             elif section_text[index] == "개찰(입찰)일시" or section_text[index] == "개찰일시":
                                 if p.match(section_text[index+1]):
-                                    data[7] = section_text[index+1]
+                                    data[8] = section_text[index+1]
                             elif section_text[index] == "입찰참가자격등록":
                                 if p.match(section_text[index+2]):
-                                    data[8] = section_text[index+2]
+                                    data[9] = section_text[index+2]
                             elif section_text[index] == "공동수급협정서" and section_text[index+1] == "마감일시":
                                 if "마감" in section_text[index+2]:
-                                    data[9] = section_text[index+2]
+                                    data[10] = section_text[index+2]
                                 break
                         except:
                             pass
@@ -75,30 +81,31 @@ def webCrawling(work_list, announcement_name, deadline, organization):
                     for index in range(len(section_text)):
                         try:
                             if section_text[index] == "사업금액":
-                                if section_text[index+1][0] == '￦' or (ord(section_text[index+1][0]) > ord('0') and ord(section_text[index+1][0]) <= ord('9')):
-                                    data[10] = section_text[index+2]
+                                if section_text[index+2][0] == '￦' or (ord(section_text[index+2][0]) > ord('0') and ord(section_text[index+2][0]) <= ord('9')):
+                                    data[11] = section_text[index+2]
                             elif section_text[index] == "추정금액":
                                 if section_text[index+1][0] == '￦' or (ord(section_text[index+1][0]) > ord('0') and ord(section_text[index+1][0]) <= ord('9')):
-                                    data[11] = section_text[index+1]
+                                    data[12] = section_text[index+1]
                             elif section_text[index] == "추정가격":
                                 if section_text[index+1] == "(부가가치세 불포함)":
-                                    if section_text[index+2][0] == '￦' or (ord(section_text[index+1][0]) > ord('0') and ord(section_text[index+1][0]) <= ord('9')):
-                                        data[12] = section_text[index+2]
+                                    if section_text[index+2][0] == '￦' or (ord(section_text[index+2][0]) > ord('0') and ord(section_text[index+2][0]) <= ord('9')):
+                                        data[13] = section_text[index+2]
                                 else:
                                     if section_text[index+1][0] == '￦' or (ord(section_text[index+1][0]) > ord('0') and ord(section_text[index+1][0]) <= ord('9')):
-                                        data[12] = section_text[index+1]
+                                        data[13] = section_text[index+1]
                             elif section_text[index] == "부가가치세":
                                 if section_text[index+1][0] == '￦' or (ord(section_text[index+1][0]) > ord('0') and ord(section_text[index+1][0]) <= ord('9')):
-                                    data[13] = section_text[index+1]
+                                    data[14] = section_text[index+1]
                             elif section_text[index] == "배정예산":
                                 if section_text[index+1][0] == '￦' or (ord(section_text[index+1][0]) > ord('0') and ord(section_text[index+1][0]) <= ord('9')):
-                                    data[14] = section_text[index+1]
+                                    data[15] = section_text[index+1]
                         except:
                             pass
                     write_budget = True
                 # 투찰 제한(참가가능지역)
                 elif "참가가능지역" in section_text:
-                    data[15] = section_text[section_text.index("참가가능지역")+1]
+                    data[16] = section_text[section_text.index("참가가능지역")+1]
+
             # 예정가격 결정 및 입찰금액 정보(사업금액, 추정금액, 추정가격, 부가가치세, 배정예산) - detail
             if not write_budget:
                 try:
@@ -106,24 +113,24 @@ def webCrawling(work_list, announcement_name, deadline, organization):
                     for index in range(len(section_text)):
                         try:
                             if section_text[index] == "사업금액":
-                                if section_text[index+1][0] == '￦' or (ord(section_text[index+1][0]) > ord('0') and ord(section_text[index+1][0]) <= ord('9')):
-                                    data[10] = section_text[index+2]
+                                if section_text[index+2][0] == '￦' or (ord(section_text[index+2][0]) > ord('0') and ord(section_text[index+2][0]) <= ord('9')):
+                                    data[11] = section_text[index+2]
                             elif section_text[index] == "추정금액":
                                 if section_text[index+1][0] == '￦' or (ord(section_text[index+1][0]) > ord('0') and ord(section_text[index+1][0]) <= ord('9')):
-                                    data[11] = section_text[index+1]
+                                    data[12] = section_text[index+1]
                             elif section_text[index] == "추정가격":
                                 if section_text[index+1] == "(부가가치세 불포함)":
-                                    if section_text[index+2][0] == '￦' or (ord(section_text[index+1][0]) > ord('0') and ord(section_text[index+1][0]) <= ord('9')):
-                                        data[12] = section_text[index+2]
+                                    if section_text[index+2][0] == '￦' or (ord(section_text[index+2][0]) > ord('0') and ord(section_text[index+2][0]) <= ord('9')):
+                                        data[13] = section_text[index+2]
                                 else:
                                     if section_text[index+1][0] == '￦' or (ord(section_text[index+1][0]) > ord('0') and ord(section_text[index+1][0]) <= ord('9')):
-                                        data[12] = section_text[index+1]
+                                        data[13] = section_text[index+1]
                             elif section_text[index] == "부가가치세":
                                 if section_text[index+1][0] == '￦' or (ord(section_text[index+1][0]) > ord('0') and ord(section_text[index+1][0]) <= ord('9')):
-                                    data[13] = section_text[index+1]
+                                    data[14] = section_text[index+1]
                             elif section_text[index] == "배정예산":
                                 if section_text[index+1][0] == '￦' or (ord(section_text[index+1][0]) > ord('0') and ord(section_text[index+1][0]) <= ord('9')):
-                                    data[14] = section_text[index+1]
+                                    data[15] = section_text[index+1]
                         except:
                             pass
                 except:
