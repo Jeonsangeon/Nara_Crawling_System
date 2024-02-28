@@ -1,4 +1,3 @@
-import time
 import re
 
 from selenium import webdriver
@@ -6,7 +5,7 @@ from selenium.webdriver.chrome.service import Service as ChromeService
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.common.by import By
 
-def webCrawling(work_list, announcement_name, deadline, organization):
+def notice_search_crawling(work_list, announcement_name, deadline, organization):
     driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
     # 나라장터 접속
     driver.get('https://www.g2b.go.kr:8101/ep/tbid/tbidList.do?taskClCds=&bidNm=&searchDtType=1&fromBidDt=2024/01/24&toBidDt=2024/02/23&fromOpenBidDt=&toOpenBidDt=&radOrgan=1&instNm=&area=&regYn=Y&bidSearchType=1&searchType=1')
@@ -144,3 +143,6 @@ def webCrawling(work_list, announcement_name, deadline, organization):
             break
         
     return announcement_list
+
+def pre_standard_crawling(agency_name, work_list, business_name):
+    print(agency_name, work_list, business_name)

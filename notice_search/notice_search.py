@@ -1,12 +1,11 @@
-from main_system.main_system_ui import MainSystemUi
-from auto_system.auto_system import webCrawling
+from notice_search.notice_search_ui import NoticeSearchUi
+from auto_system.auto_system import notice_search_crawling
 from auto_system.write_data import make_announcement_sheet, init_excel
-from PySide6.QtWidgets import QMainWindow
 from PySide6.QtWidgets import *
 
-class MainSystem(QMainWindow, MainSystemUi):
+class NoticeSearch(QDialog,NoticeSearchUi):
     def __init__(self):
-        QMainWindow.__init__(self)
+        QDialog.__init__(self)
         self.setupUi(self)
 
         self.work_all_checkbox.clicked.connect(self.when_all_checkbox_clicked)
@@ -25,11 +24,9 @@ class MainSystem(QMainWindow, MainSystemUi):
     
     def register_announcement_value(self):
         announcement_name= self.announcement_name_line.text()
-        if announcement_name:
-            self.announcement_combo.addItem(announcement_name)
+        self.announcement_combo.addItem(announcement_name)
         self.announcement_name_line.clear()
         
-
     def when_all_checkbox_clicked(self):
         self.work_article_checkbox.setChecked(False)
         self.work_construction_checkbox.setChecked(False)
@@ -76,8 +73,9 @@ class MainSystem(QMainWindow, MainSystemUi):
         option = [work_list, deadline, self.organization_line.text()]
         init_excel(option)
         for announce_value in announcement_list:
-            data_list = webCrawling(option[0], announce_value, option[1], option[2])
+            data_list = notice_search_crawling(option[0], announce_value, option[1], option[2])
             make_announcement_sheet(data_list, announce_value)
             total_data += len(data_list)
         self.announcement_combo.clear()
+        self.organization_line.clear()
         QMessageBox.about(self, "입찰공고 목록 작성완료", f"작성 결과: 총 {len(announcement_list)} 항목에 {total_data}개 데이터가 작성되었습니다.")

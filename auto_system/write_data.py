@@ -1,39 +1,56 @@
 import openpyxl
 
-def init_excel(option):
+def init_excel(option, notice = True):
     workbook = openpyxl.Workbook()
     worksheet = workbook.active
     worksheet.title = '설정옵션'
-    worksheet.append(['업무', '공고/개찰일', '기관명'])
-    workbook.save(filename='입찰공고목록.xlsx')
-    for index, value in enumerate(option[0], 2):
-        if not value:
-            worksheet[f'A{index}'] = "전체"
+    if notice:
+        worksheet.append(['업무', '공고/개찰일', '기관명'])
+        for index, value in enumerate(option[0], 2):
+            if not value:
+                worksheet[f'A{index}'] = "전체"
+            else:
+                if value == 1:
+                    worksheet[f'A{index}'] = "물품"
+                if value == 3:
+                    worksheet[f'A{index}'] = "공사"
+                if value == 5:
+                    worksheet[f'A{index}'] = "용역"
+                if value == 6:
+                    worksheet[f'A{index}'] = "리스"
+                if value == 2:
+                    worksheet[f'A{index}'] = "외자"
+                if value == 11:
+                    worksheet[f'A{index}'] = "비축"
+                if value == 4:
+                    worksheet[f'A{index}'] = "기타"
+                if value == 20:
+                    worksheet[f'A{index}'] = "민간"
+        if option[1] == 1:
+            worksheet['B2'] = '최근1개월'
+        elif option[1] == 2:
+            worksheet['B2'] = '최근3개월'
         else:
-            if value == 1:
-                worksheet[f'A{index}'] = "물품"
-            if value == 3:
-                worksheet[f'A{index}'] = "공사"
-            if value == 5:
-                worksheet[f'A{index}'] = "용역"
-            if value == 6:
-                worksheet[f'A{index}'] = "리스"
-            if value == 2:
-                worksheet[f'A{index}'] = "외자"
-            if value == 11:
-                worksheet[f'A{index}'] = "비축"
-            if value == 4:
-                worksheet[f'A{index}'] = "기타"
-            if value == 20:
-                worksheet[f'A{index}'] = "민간"
-    if option[1] == 1:
-        worksheet['B2'] = '최근1개월'
-    elif option[1] == 2:
-        worksheet['B2'] = '최근3개월'
+            worksheet['B2'] = '최근6개월'
+        worksheet['C2'] = option[2]
+        workbook.save(filename='입찰공고목록.xlsx')
     else:
-        worksheet['B2'] = '최근6개월'
-    worksheet['C2'] = option[2]
-    workbook.save(filename='입찰공고목록.xlsx')
+        worksheet.append(['업무', '기관별검색', '품명(사업명)'])
+        for index, value in enumerate(option[1], 2):
+            if value == "A":
+                worksheet[f'A{index}'] = "전체"
+            elif value == 1:
+                worksheet[f'A{index}'] = "물품"
+            elif value == 3:
+                worksheet[f'A{index}'] = "공사"
+            elif value == 5:
+                worksheet[f'A{index}'] = "용역"
+            elif value == 2:
+                worksheet[f'A{index}'] = "외자"
+        worksheet['B2'] = option[0]
+        worksheet['C3'] = option[2]
+        workbook.save(filename='사전규격목록.xlsx')
+            
 
 def make_announcement_sheet(announce_list, sheet_name):
     workbook = openpyxl.load_workbook('입찰공고목록.xlsx')

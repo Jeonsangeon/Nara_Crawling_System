@@ -1,8 +1,8 @@
 from PySide6.QtWidgets import QApplication
-from main_system.main_system import MainSystem
+from main_menu.main_menu import MainMenu
 
 if __name__ == '__main__':
     app = QApplication()
-    window = MainSystem()
+    window = MainMenu()
     window.show()
     app.exec()

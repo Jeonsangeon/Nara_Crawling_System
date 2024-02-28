@@ -1,15 +1,18 @@
 from PySide6.QtCore import QRect
 from PySide6.QtWidgets import *
 
-class MainSystemUi(object):
-    def setupUi(self, window: QMainWindow):
-        window.setWindowTitle("통합 DB 작업")  # 창 제목
+class NoticeSearchUi(object):
+    def setupUi(self, window: QDialog):
+        window.setWindowTitle("입찰 공고 검색")  # 창 제목
         window.setFixedSize(560, 130)  # 창 크기
         window.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Fixed)  # 창 크기 고정
         
         # 업무
         self.work_label = QLabel(window)
         self.work_label.setText("업무")
+        font = self.work_label.font()
+        font.setBold(True)
+        self.work_label.setFont(font)
         self.work_label.setGeometry(QRect(10, 0, 30, 30))
 
         self.work_all_checkbox = QCheckBox(window)
@@ -71,21 +74,27 @@ class MainSystemUi(object):
         # 공고명
         self.announcement_name_label = QLabel(window)
         self.announcement_name_label.setText("공고명")
+        font = self.announcement_name_label.font()
+        font.setBold(True)
+        self.announcement_name_label.setFont(font)
         self.announcement_name_label.setGeometry(QRect(10, 30, 40, 30))
 
         self.announcement_name_line = QLineEdit(window)
-        self.announcement_name_line.setGeometry(QRect(70, 30, 300, 30))
+        self.announcement_name_line.setGeometry(QRect(70, 30, 300, 25))
 
         self.announcement_register_button = QPushButton(window)
         self.announcement_register_button.setText("등록")
-        self.announcement_register_button.setGeometry(QRect(375, 30, 70, 30))
+        self.announcement_register_button.setGeometry(QRect(375, 30, 70, 25))
 
         self.announcement_combo = QComboBox(window)
-        self.announcement_combo.setGeometry(QRect(450, 30, 100, 30))
+        self.announcement_combo.setGeometry(QRect(450, 30, 100, 25))
         
         # 공고/개찰일
         self.deadline_label = QLabel(window)
         self.deadline_label.setText("공고/개찰일")
+        font = self.deadline_label.font()
+        font.setBold(True)
+        self.deadline_label.setFont(font)
         self.deadline_label.setGeometry(QRect(10, 60, 70, 30))
 
         self.deadline_1month_checkbox = QRadioButton(window)
@@ -110,14 +119,17 @@ class MainSystemUi(object):
         # 기관명
         self.organization_label = QLabel(window)
         self.organization_label.setText("기관명")
+        font = self.organization_label.font()
+        font.setBold(True)
+        self.organization_label.setFont(font)
         self.organization_label.setGeometry(QRect(10, 90, 40, 30))
 
         self.organization_line = QLineEdit(window)
-        self.organization_line.setGeometry(QRect(70, 90, 300, 30))
+        self.organization_line.setGeometry(QRect(70, 90, 300, 25))
 
         # 실행
         self.execute_button = QPushButton(window)
         self.execute_button.setText("검색")
-        self.execute_button.setGeometry(QRect(450, 90, 100, 30))
+        self.execute_button.setGeometry(QRect(450, 75, 100, 40))
 
     
