@@ -1,4 +1,5 @@
 import re
+import time
 
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service as ChromeService
@@ -144,5 +145,97 @@ def notice_search_crawling(work_list, announcement_name, deadline, organization)
         
     return announcement_list
 
-def pre_standard_crawling(agency_name, work_list, business_name):
-    print(agency_name, work_list, business_name)
+def pre_standard_crawling(agency_option, work_option, business_name):
+    driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
+    # 검색목록 접속
+    driver.get('https://www.g2b.go.kr:8081/ep/preparation/prestd/preStdSrch.do?taskClCd=5')
+    # 기관별검색 - 공고기관 설정
+    if agency_option[0] == 1:
+        driver.find_element(By.XPATH, '//*[@id="instCl1"]').click()
+    # 기관별검색 - 검색명 설정
+    if agency_option[1]:
+        driver.find_element(By.XPATH, '//*[@id="instNm"]').click()
+        element = driver.find_element(By.XPATH, '//*[@id="instNm"]')
+        element.send_keys(agency_option[1])
+    # 업무 설정
+    for work_value in work_option:
+        # 용역 기본설정
+        if work_value != 5:
+            driver.find_element(By.XPATH, f'//*[@id="taskClCds{work_value}"]"]').click()
+    # 품명(사업명) 설정
+    if business_name:
+        driver.find_element(By.XPATH, '//*[@id="prodNm"]').click()
+        element = driver.find_element(By.XPATH, '//*[@id="prodNm"]')
+        element.send_keys(business_name)
+    # 출력목록수 설정
+    driver.find_element(By.XPATH, '//*[@id="recordCountPerPage"]').click()
+    driver.find_element(By.XPATH, '//*[@id="recordCountPerPage"]/option[5]').click()
+    # 검색
+    driver.find_element(By.XPATH, '//*[@id="frmSearch1"]/div[3]/div/a[1]/span').click()
+    input_data = list()
+    # 크롤링
+    init_chapter = True
+    page_num = 1
+    while True:
+        try:
+            for row in range(1, 101):
+                data = ["", "", "", "", "", "", ""]
+                driver.find_element(By.XPATH, f'//*[@id="container"]/div/table/tbody/tr[{row}]/td[4]/div/a').click()
+                time.sleep(0.1)
+                data_text = driver.find_element(By.CLASS_NAME, 'section').text.split('\n')
+                # "품명(사업명)", "사업명", "품명"으로 표시
+                if "품명(사업명)" in data_text:
+                    data[0] = data_text[data_text.index("품명(사업명)")+1]
+                elif "사업명" in data_text:
+                    data[0] = data_text[data_text.index("사업명")+1]
+                elif "품명" in data_text:
+                    data[0] = data_text[data_text.index("품명")+1]
+                # 배정예산액
+                if "배정예산액" in data_text:
+                    data[1] = data_text[data_text.index("배정예산액")+1]
+                # "공개일시" 또는 "나라장터 수신일시"로 표시
+                if "공개일시" in data_text:
+                    data[2] = data_text[data_text.index("공개일시")+1]
+                    if data_text[data_text.index("공개일시")+2] != "의견등록마감일시":
+                        data[2] = data[2] + " " + data_text[data_text.index("공개일시")+2]
+                elif "나라장터 수신일시" in data_text:
+                    data[2] = data_text[data_text.index("나라장터 수신일시")+1]
+                    if data_text[data_text.index("나라장터 수신일시")+2] != "의견등록마감일시":
+                        data[2] = data[2] + " " + data_text[data_text.index("나라장터 수신일시")+2]
+                # 의견등록마감일시
+                if "의견등록마감일시" in data_text:
+                    data[3] = data_text[data_text.index("의견등록마감일시")+1]
+                # 공고기관
+                if "공고기관" in data_text:
+                    data[4] = data_text[data_text.index("공고기관")+1]
+                    if data_text[data_text.index("공고기관")+2] != "수요기관":
+                        data[4] = data[4] + " " + data_text[data_text.index("공고기관")+2]
+                # 수요기관
+                if "수요기관" in data_text:
+                    data[5] = data_text[data_text.index("수요기관")+1]
+                data[6] = driver.current_url
+                input_data.append(data)
+                driver.back()
+            # 1 ~ 10 page
+            page_num += 1
+            if init_chapter:
+                if page_num == 2:
+                    driver.find_element(By.XPATH, f'//*[@id="pagination"]/a[{page_num-1}]').click()
+                elif page_num == 11:
+                    driver.find_element(By.CLASS_NAME, 'next').click()
+                    init_chapter = False
+                else:
+                    driver.find_element(By.XPATH, f'//*[@id="pagination"]/a[{page_num}]').click()
+            # 11 ~ page
+            else:
+                if page_num % 10 == 1:
+                    driver.find_element(By.CLASS_NAME, 'next').click()
+                else:
+                    if page_num % 10 == 0:
+                        driver.find_element(By.XPATH, f'//*[@id="pagination"]/a[11]').click()
+                    else:
+                        driver.find_element(By.XPATH, f'//*[@id="pagination"]/a[{(page_num%10)+1}]').click()
+        except:
+            break
+
+    return input_data

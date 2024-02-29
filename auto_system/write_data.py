@@ -47,11 +47,13 @@ def init_excel(option, notice = True):
                 worksheet[f'A{index}'] = "용역"
             elif value == 2:
                 worksheet[f'A{index}'] = "외자"
-        worksheet['B2'] = option[0]
-        worksheet['C3'] = option[2]
+        if option[0][0] == 1:
+            worksheet['B2'] = "공고기관: " + option[0][1]
+        else:
+            worksheet['B2'] = "수요기관: " + option[0][1]
+        worksheet['C2'] = option[2]
         workbook.save(filename='사전규격목록.xlsx')
             
-
 def make_announcement_sheet(announce_list, sheet_name):
     workbook = openpyxl.load_workbook('입찰공고목록.xlsx')
     worksheet = workbook.create_sheet(sheet_name)
@@ -61,3 +63,13 @@ def make_announcement_sheet(announce_list, sheet_name):
         worksheet.append(row)
 
     workbook.save(filename='입찰공고목록.xlsx')
+
+def make_prestandard_sheet(input_data):
+    workbook = openpyxl.load_workbook('사전규격목록.xlsx')
+    worksheet = workbook.create_sheet('목록')
+    worksheet.append(['품명(사업명)', '배정예산액', '공개일시(나라장터 수신일시)', '의견등록마감일시', '공고기관', '수요기관', 'URL'])
+
+    for data in input_data:
+        worksheet.append(data)
+
+    workbook.save(filename='사전규격목록.xlsx')
